@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('password');
             $table->foreignId('role_id')->nullable()->constrained()->nullOnDelete();
             $table->string('status')->default('active');
+            $table->string('api_token', 80)->unique()->nullable()->default(null);
             $table->rememberToken();
             $table->timestamps();
         });

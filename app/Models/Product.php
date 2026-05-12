@@ -5,12 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['vendor_id', 'category_id', 'brand_id', 'name', 'slug', 'description', 'short_description', 'price', 'sale_price', 'sku', 'quantity', 'status', 'is_featured'])]
+#[Fillable(['category_id', 'brand_id', 'name', 'slug', 'description', 'short_description', 'price', 'sale_price', 'sku', 'quantity', 'status', 'is_featured'])]
 class Product extends Model
 {
-    public function vendor()
+    public function vendors()
     {
-        return $this->belongsTo(User::class, 'vendor_id');
+        return $this->belongsToMany(User::class, 'vendor_products', 'product_id', 'vendor_id')
+                    ->withPivot('vendor_price', 'status')
+                    ->withTimestamps();
     }
 
     public function category()

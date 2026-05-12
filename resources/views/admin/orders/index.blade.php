@@ -56,7 +56,15 @@
                     @forelse($orders as $order)
                         <tr class="text-sm hover:bg-gray-50 transition-colors">
                             <td class="py-4 px-6 font-bold text-gray-900">#{{ $order->order_number }}</td>
-                            <td class="py-4 px-6 text-gray-600">{{ $order->user->name }}</td>
+                            <td class="py-4 px-6 text-gray-600">
+                                @if($order->user)
+                                    {{ $order->user->name }}
+                                @elseif($order->vendor)
+                                    <span class="text-indigo-600 font-semibold">Dropshipped by {{ $order->vendor->name }}</span>
+                                @else
+                                    Unknown Customer
+                                @endif
+                            </td>
                             <td class="py-4 px-6 font-black text-gray-900">${{ number_format($order->total_amount, 2) }}</td>
                             <td class="py-4 px-6">
                                 <span class="px-2 py-1 rounded-full text-[10px] font-black uppercase {{ $order->payment_status === 'paid' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }}">

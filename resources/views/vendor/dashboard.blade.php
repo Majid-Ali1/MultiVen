@@ -8,11 +8,11 @@
     <div class="flex justify-between items-end">
         <div>
             <h1 class="text-3xl font-black text-gray-900 tracking-tight">Seller Central</h1>
-            <p class="text-gray-500 mt-1">Manage your shop and listings.</p>
+            <p class="text-gray-500 mt-1">Manage your dropship store and orders.</p>
         </div>
-        <x-ui.button onclick="window.location='{{ route('vendor.products.create') }}'" class="shadow-lg shadow-indigo-100">
+        <x-ui.button onclick="window.location='{{ route('vendor.products.catalog') }}'" class="shadow-lg shadow-indigo-100">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-            Add New Product
+            Browse Catalog
         </x-ui.button>
     </div>
 
@@ -27,15 +27,15 @@
         </x-ui.card>
 
         <x-ui.card>
-            <p class="text-gray-500 text-sm font-bold uppercase tracking-wider">Total Products</p>
+            <p class="text-gray-500 text-sm font-bold uppercase tracking-wider">My Products</p>
             <h3 class="text-3xl font-black text-gray-900 mt-2">{{ $stats['total_products'] }}</h3>
             <p class="text-emerald-600 text-xs mt-4 font-bold">{{ $stats['active_products'] }} Active Listings</p>
         </x-ui.card>
 
         <x-ui.card>
-            <p class="text-gray-500 text-sm font-bold uppercase tracking-wider">Pending Approval</p>
-            <h3 class="text-3xl font-black text-gray-900 mt-2">{{ $stats['pending_products'] }}</h3>
-            <p class="text-gray-400 text-xs mt-4">Awaiting admin review</p>
+            <p class="text-gray-500 text-sm font-bold uppercase tracking-wider">Total Orders</p>
+            <h3 class="text-3xl font-black text-gray-900 mt-2">{{ $stats['total_orders'] }}</h3>
+            <p class="text-gray-400 text-xs mt-4">Dropship orders fulfilled</p>
         </x-ui.card>
 
         <x-ui.card>
@@ -47,20 +47,21 @@
 
     <div class="grid grid-cols-1 gap-8">
         <!-- Recent Products -->
-        <x-ui.card title="Your Recent Listings">
+        <x-ui.card title="Your Imported Products">
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
                     <thead>
                         <tr class="text-xs text-gray-400 uppercase tracking-wider border-b border-gray-50">
                             <th class="pb-3 font-bold">Product</th>
                             <th class="pb-3 font-bold">SKU</th>
-                            <th class="pb-3 font-bold">Price</th>
+                            <th class="pb-3 font-bold">Wholesale</th>
+                            <th class="pb-3 font-bold">Your Price</th>
                             <th class="pb-3 font-bold">Stock</th>
                             <th class="pb-3 font-bold">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
-                        @foreach($recent_products as $product)
+                        @forelse($recent_products as $product)
                             <tr class="text-sm">
                                 <td class="py-4">
                                     <div class="flex items-center gap-3">
@@ -71,15 +72,23 @@
                                     </div>
                                 </td>
                                 <td class="py-4 text-gray-600 font-mono text-xs">{{ $product->sku }}</td>
-                                <td class="py-4 font-black text-gray-900">${{ number_format($product->price, 2) }}</td>
+                                <td class="py-4 text-gray-500">${{ number_format($product->price, 2) }}</td>
+                                <td class="py-4 font-black text-gray-900">${{ number_format($product->pivot->vendor_price, 2) }}</td>
                                 <td class="py-4 text-gray-600">{{ $product->quantity }}</td>
                                 <td class="py-4">
-                                    <span class="px-2 py-1 rounded-full text-[10px] font-black uppercase {{ $product->status == 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700' }}">
-                                        {{ $product->status }}
+                                    <span class="px-2 py-1 rounded-full text-[10px] font-black uppercase {{ $product->pivot->status == 'active' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }}">
+                                        {{ $product->pivot->status }}
                                     </span>
                                 </td>
                             </tr>
-                        @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="6" class="py-12 text-center text-gray-400">
+                                    <p class="italic">You haven't imported any products yet.</p>
+                                    <a href="{{ route('vendor.products.catalog') }}" class="text-indigo-600 font-bold hover:underline mt-2 inline-block">Browse the Master Catalog</a>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
@@ -93,3 +102,4 @@
     </div>
 </div>
 @endsection
+

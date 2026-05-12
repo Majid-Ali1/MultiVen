@@ -4,36 +4,89 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
-use App\Notifications\StatusUpdate;
+use App\Models\Category;
+use App\Models\Brand;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::with(['vendor', 'category'])->latest()->paginate(20);
+        $products = Product::with(['category'])->latest()->paginate(20);
         return view('admin.products.index', compact('products'));
     }
 
-    public function approve(Product $product)
+    public function create()
     {
-        $product->update(['status' => 'active']);
-        $product->vendor->notify(new StatusUpdate(
-            'Product Approved',
-            "Your product '{$product->name}' has been approved and is now live on the storefront.",
-            route('products.show', $product->slug)
-        ));
-        return redirect()->back()->with('success', 'Product approved successfully.');
+        $categories = Category::all();
+        $brands = Brand::all();
+        return view('admin.products.create', compact('categories', 'brands'));
     }
 
-    public function reject(Product $product)
+    public function store(Request $request)
     {
-        $product->update(['status' => 'inactive']);
-        $product->vendor->notify(new StatusUpdate(
-            'Product Rejected',
-            "Your product '{$product->name}' has been rejected by the administrator.",
-            route('vendor.products.index')
-        ));
-        return redirect()->back()->with('success', 'Product rejected.');
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'quantity' => 'required|integer|min:0',
+            'category_id' => 'required|exists:categories,id',
+            'brand_id' => 'nullable|exists:brands,id',
+            'sku' => 'required|string|unique:products,sku',
+        ]);
+
+        Product::create([
+            'name' => $request->name,
+            'slug' => Str::slug($request->name) . '-' . uniqid(),
+            'description' => $request->description,
+            'price' => $request->price,
+            'quantity' => $request->quantity,
+            'category_id' => $request->category_id,
+            'brand_id' => $request->brand_id,
+            'sku' => $request->sku,
+            'status' => 'active',
+        ]);
+
+        return redirect()->route('admin.products.index')->with('success', 'Master Product created successfully.');
+    }
+
+    public function edit(Product $product)
+    {
+        $categories = Category::all();
+        $brands = Brand::all();
+        return view('admin.products.edit', compact('product', 'categories', 'brands'));
+    }
+
+    public function update(Request $request, Product $product)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'quantity' => 'required|integer|min:0',
+            'category_id' => 'required|exists:categories,id',
+            'brand_id' => 'nullable|exists:brands,id',
+            'sku' => 'required|string|unique:products,sku,' . $product->id,
+        ]);
+
+        $product->update([
+            'name' => $request->name,
+            'slug' => Str::slug($request->name) . '-' . uniqid(),
+            'description' => $request->description,
+            'price' => $request->price,
+            'quantity' => $request->quantity,
+            'category_id' => $request->category_id,
+            'brand_id' => $request->brand_id,
+            'sku' => $request->sku,
+        ]);
+
+        return redirect()->route('admin.products.index')->with('success', 'Master Product updated successfully.');
+    }
+
+    public function destroy(Product $product)
+    {
+        $product->delete();
+        return redirect()->route('admin.products.index')->with('success', 'Master Product deleted successfully.');
     }
 }

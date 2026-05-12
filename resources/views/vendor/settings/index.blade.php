@@ -59,5 +59,26 @@
             </button>
         </div>
     </form>
+
+    <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="p-8 space-y-6">
+            <h3 class="font-black text-gray-800 text-lg border-b border-gray-50 pb-4">API Settings</h3>
+            <p class="text-sm text-gray-500">Use this token to authenticate your dropshipping storefront with the MultiVen API.</p>
+
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex items-center justify-between">
+                <div>
+                    <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Your API Token</div>
+                    <code class="text-sm font-mono text-slate-900 break-all select-all">{{ $user->api_token ?? 'No token generated yet.' }}</code>
+                </div>
+            </div>
+
+            <form action="{{ route('vendor.settings.token') }}" method="POST" class="mt-4">
+                @csrf
+                <button type="submit" class="text-sm px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-medium rounded-lg transition-colors" onclick="return confirm('Are you sure? Generating a new token will invalidate any existing integrations using the old token.')">
+                    {{ $user->api_token ? 'Regenerate API Token' : 'Generate API Token' }}
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
 @endsection

@@ -50,9 +50,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/vendors', [\App\Http\Controllers\Admin\VendorController::class, 'index'])->name('vendors.index');
         Route::post('/vendors/{vendor}/suspend', [\App\Http\Controllers\Admin\VendorController::class, 'suspend'])->name('vendors.suspend');
         Route::post('/vendors/{vendor}/activate', [\App\Http\Controllers\Admin\VendorController::class, 'activate'])->name('vendors.activate');
-        Route::resource('products', \App\Http\Controllers\Admin\ProductController::class)->only(['index']);
-        Route::post('/products/{product}/approve', [\App\Http\Controllers\Admin\ProductController::class, 'approve'])->name('products.approve');
-        Route::post('/products/{product}/reject', [\App\Http\Controllers\Admin\ProductController::class, 'reject'])->name('products.reject');
+        Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
         Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
         Route::post('/orders/{order}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.status');
 
@@ -67,14 +65,18 @@ Route::middleware(['auth'])->group(function () {
     // Vendor Routes
     Route::middleware(['role:vendor'])->prefix('vendor')->name('vendor.')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Vendor\DashboardController::class, 'index'])->name('dashboard');
-
-        Route::resource('products', \App\Http\Controllers\Vendor\ProductController::class);
+        Route::get('/products/catalog', [\App\Http\Controllers\Vendor\ProductController::class, 'catalog'])->name('products.catalog');
+        Route::post('/products/import', [\App\Http\Controllers\Vendor\ProductController::class, 'import'])->name('products.import');
+        Route::patch('/products/{product}/price', [\App\Http\Controllers\Vendor\ProductController::class, 'updatePrice'])->name('products.updatePrice');
+        Route::get('/products', [\App\Http\Controllers\Vendor\ProductController::class, 'index'])->name('products.index');
+        Route::delete('/products/{product}', [\App\Http\Controllers\Vendor\ProductController::class, 'destroy'])->name('products.destroy');
 
         Route::get('/orders', [\App\Http\Controllers\Vendor\OrderController::class, 'index'])->name('orders.index');
         Route::get('/orders/{order}', [\App\Http\Controllers\Vendor\OrderController::class, 'show'])->name('orders.show');
 
         Route::get('/settings', [\App\Http\Controllers\Vendor\SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings', [\App\Http\Controllers\Vendor\SettingController::class, 'update'])->name('settings.update');
+        Route::post('/settings/token', [\App\Http\Controllers\Vendor\SettingController::class, 'generateToken'])->name('settings.token');
     });
 
     // Partner Routes

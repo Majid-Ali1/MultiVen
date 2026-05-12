@@ -4,111 +4,90 @@ namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
-use App\Models\Category;
-use App\Models\Brand;
+use App\Models\VendorProduct;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
+    // View the vendor's selected/imported products
     public function index()
     {
-        $products = Product::where('vendor_id', Auth::id())->latest()->paginate(10);
+        $vendor = Auth::user();
+        $products = $vendor->dropshipProducts()->paginate(10);
+        
         return view('vendor.products.index', compact('products'));
     }
 
-    public function create()
+    // View the master catalog
+    public function catalog()
     {
-        $categories = Category::where('is_active', true)->get();
-        $brands = Brand::where('is_active', true)->get();
-        return view('vendor.products.create', compact('categories', 'brands'));
+        // Only show active master products
+        $products = Product::where('status', 'active')
+            ->whereDoesntHave('vendors', function($q) {
+                $q->where('users.id', Auth::id());
+            })
+            ->latest()
+            ->paginate(12);
+
+        return view('vendor.products.catalog', compact('products'));
     }
 
-    public function store(Request $request)
+    // Import a product to the vendor's store
+    public function import(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'brand_id' => 'nullable|exists:brands,id',
-            'description' => 'required|string',
-            'price' => 'required|numeric|min:0',
-            'sale_price' => 'nullable|numeric|min:0|lt:price',
-            'sku' => 'required|string|unique:products,sku',
-            'quantity' => 'required|integer|min:0',
+            'product_id' => 'required|exists:products,id',
+            'vendor_price' => 'required|numeric|min:0',
         ]);
 
-        $product = new Product();
-        $product->vendor_id = Auth::id();
-        $product->category_id = $request->category_id;
-        $product->brand_id = $request->brand_id;
-        $product->name = $request->name;
-        $product->slug = Str::slug($request->name) . '-' . Str::random(5);
-        $product->description = $request->description;
-        $product->price = $request->price;
-        $product->sale_price = $request->sale_price;
-        $product->sku = $request->sku;
-        $product->quantity = $request->quantity;
-        $product->status = 'pending'; // Requires admin approval
-        
-        $product->save();
+        $product = Product::where('status', 'active')->findOrFail($request->product_id);
 
-        return redirect()->route('vendor.products.index')->with('success', 'Product submitted for approval.');
-    }
-
-    public function edit(Product $product)
-    {
-        if ($product->vendor_id !== Auth::id()) {
-            abort(403);
+        if ($request->vendor_price < $product->price) {
+            return back()->with('error', 'Retail price cannot be lower than the wholesale price ($' . number_format($product->price, 2) . ').');
         }
 
-        $categories = Category::where('is_active', true)->get();
-        $brands = Brand::where('is_active', true)->get();
-        return view('vendor.products.edit', compact('product', 'categories', 'brands'));
+        VendorProduct::firstOrCreate(
+            [
+                'vendor_id' => Auth::id(),
+                'product_id' => $product->id,
+            ],
+            [
+                'vendor_price' => $request->vendor_price,
+                'status' => 'active',
+            ]
+        );
+
+        return redirect()->route('vendor.products.index')->with('success', 'Product added to your store.');
     }
 
-    public function update(Request $request, Product $product)
+    // Update the retail price of an imported product
+    public function updatePrice(Request $request, Product $product)
     {
-        if ($product->vendor_id !== Auth::id()) {
-            abort(403);
-        }
-
         $request->validate([
-            'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
-            'brand_id' => 'nullable|exists:brands,id',
-            'description' => 'required|string',
-            'price' => 'required|numeric|min:0',
-            'sale_price' => 'nullable|numeric|min:0|lt:price',
-            'sku' => 'required|string|unique:products,sku,' . $product->id,
-            'quantity' => 'required|integer|min:0',
+            'vendor_price' => 'required|numeric|min:' . $product->price,
         ]);
 
-        $product->category_id = $request->category_id;
-        $product->brand_id = $request->brand_id;
-        $product->name = $request->name;
-        if ($product->name !== $request->name) {
-            $product->slug = Str::slug($request->name) . '-' . Str::random(5);
-        }
-        $product->description = $request->description;
-        $product->price = $request->price;
-        $product->sale_price = $request->sale_price;
-        $product->sku = $request->sku;
-        $product->quantity = $request->quantity;
-        
-        $product->save();
+        $vendorProduct = VendorProduct::where('vendor_id', Auth::id())
+                                      ->where('product_id', $product->id)
+                                      ->firstOrFail();
 
-        return redirect()->route('vendor.products.index')->with('success', 'Product updated successfully.');
+        $vendorProduct->update([
+            'vendor_price' => $request->vendor_price
+        ]);
+
+        return redirect()->route('vendor.products.index')->with('success', 'Retail price updated successfully.');
     }
 
+    // Remove a product from the vendor's store
     public function destroy(Product $product)
     {
-        if ($product->vendor_id !== Auth::id()) {
-            abort(403);
-        }
+        $vendorProduct = VendorProduct::where('vendor_id', Auth::id())
+                                      ->where('product_id', $product->id)
+                                      ->firstOrFail();
 
-        $product->delete();
+        $vendorProduct->delete();
 
-        return redirect()->route('vendor.products.index')->with('success', 'Product deleted successfully.');
+        return redirect()->route('vendor.products.index')->with('success', 'Product removed from your store.');
     }
 }

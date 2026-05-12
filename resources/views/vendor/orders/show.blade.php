@@ -40,13 +40,23 @@
             <div class="bg-white rounded-3xl border border-gray-100 shadow-sm p-6">
                 <h3 class="font-black text-gray-800 mb-4">Customer</h3>
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold">
-                        {{ substr($order->user->name, 0, 1) }}
-                    </div>
-                    <div>
-                        <p class="font-bold text-gray-900 text-sm">{{ $order->user->name }}</p>
-                        <p class="text-xs text-gray-500">{{ $order->user->email }}</p>
-                    </div>
+                    @if($order->user)
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold">
+                            {{ substr($order->user->name, 0, 1) }}
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-900 text-sm">{{ $order->user->name }}</p>
+                            <p class="text-xs text-gray-500">{{ $order->user->email }}</p>
+                        </div>
+                    @else
+                        <div class="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">
+                            D
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-900 text-sm">Dropship Customer</p>
+                            <p class="text-xs text-gray-500">API Order</p>
+                        </div>
+                    @endif
                 </div>
                 <div class="mt-4 pt-4 border-t border-gray-50 space-y-2">
                     <div class="flex justify-between text-sm">

@@ -18,8 +18,11 @@
                     Inventory
                 </div>
                 
-                <x-ui.nav-link href="{{ route('vendor.products.index') }}" :active="request()->routeIs('vendor.products.*')" icon="package" class="text-slate-300 hover:text-white hover:bg-slate-800">
-                    My Products
+                <x-ui.nav-link href="{{ route('vendor.products.catalog') }}" :active="request()->routeIs('vendor.products.catalog')" icon="collection" class="text-slate-300 hover:text-white hover:bg-slate-800">
+                    Master Catalog
+                </x-ui.nav-link>
+                <x-ui.nav-link href="{{ route('vendor.products.index') }}" :active="request()->routeIs('vendor.products.index')" icon="package" class="text-slate-300 hover:text-white hover:bg-slate-800">
+                    My Store Products
                 </x-ui.nav-link>
                 <x-ui.nav-link href="{{ route('vendor.orders.index') }}" :active="request()->routeIs('vendor.orders.*')" icon="shopping-cart" class="text-slate-300 hover:text-white hover:bg-slate-800">Orders</x-ui.nav-link>
                 

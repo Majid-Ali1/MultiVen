@@ -39,8 +39,8 @@ class RegisterController extends Controller
         Auth::login($user);
 
         return match($role->slug) {
-            'vendor' => redirect()->route('vendor.dashboard'),
-            default => redirect()->route('customer.dashboard'),
+            'vendor' => redirect()->route('verification.notice')->with('success', 'Registration successful! Your application is under review.'),
+            default => redirect()->route('customer.dashboard')->with('success', 'Registration successful! Welcome to MultiVen.'),
         };
     }
 }
