@@ -33,11 +33,20 @@ class SettingController extends Controller
             if (!Hash::check($request->current_password, $user->password)) {
                 return back()->withErrors(['current_password' => 'Current password is incorrect.']);
             }
-            $user->password = Hash::make($request->password);
+            $user->password = $request->password;
         }
 
         $user->save();
 
         return back()->with('success', 'Profile updated successfully!');
+    }
+
+    public function generateToken()
+    {
+        $user = Auth::user();
+        $user->api_token = \Illuminate\Support\Str::random(60);
+        $user->save();
+        
+        return back()->with('success', 'New API token generated successfully!');
     }
 }

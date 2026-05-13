@@ -98,11 +98,11 @@
                 <!-- Vendor Info Card -->
                 <div class="bg-gray-50 rounded-3xl p-6 border border-gray-100 flex items-center gap-6">
                     <div class="w-16 h-16 rounded-2xl bg-indigo-100 flex items-center justify-center text-indigo-600 text-2xl font-black">
-                        {{ substr($product->vendor->name, 0, 1) }}
+                        M
                     </div>
                     <div>
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Sold By</p>
-                        <h4 class="text-xl font-bold text-gray-900">{{ $product->vendor->name }}</h4>
+                        <h4 class="text-xl font-bold text-gray-900">MultiVen Direct</h4>
                         <a href="{{ route('home') }}" class="text-sm font-bold text-indigo-600 hover:underline mt-1 inline-block">Visit Store Profile</a>
                     </div>
                 </div>

@@ -19,6 +19,14 @@ class RoleMiddleware
             return redirect()->route('login');
         }
 
+        if ($request->user()->status === 'pending') {
+            return redirect()->route('verification.notice');
+        }
+
+        if ($request->user()->status === 'suspended') {
+            return redirect()->route('account.suspended');
+        }
+
         if (in_array($request->user()->role->slug, $roles)) {
             return $next($request);
         }

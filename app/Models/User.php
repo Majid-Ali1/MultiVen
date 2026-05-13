@@ -17,6 +17,18 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    public function settings()
+    {
+        return $this->hasMany(Setting::class, 'vendor_id');
+    }
+
+    public function dropshipProducts()
+    {
+        return $this->belongsToMany(Product::class, 'vendor_products', 'vendor_id', 'product_id')
+                    ->withPivot('vendor_price', 'status')
+                    ->withTimestamps();
+    }
+
     public function role()
     {
         return $this->belongsTo(Role::class);

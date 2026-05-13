@@ -45,34 +45,47 @@ class VendorSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        // Create Products
-        Product::create([
-            'vendor_id' => $vendor->id,
+        // Create Master Products
+        $product1 = Product::create([
             'category_id' => $electronics->id,
             'brand_id' => $brand->id,
             'name' => 'iPhone 15 Pro',
             'slug' => 'iphone-15-pro',
             'description' => 'Titanium design. A17 Pro chip. Pro camera system.',
-            'price' => 999.99,
+            'price' => 999.99, // Wholesale price
             'sku' => 'IPH15P-128-BLK',
             'quantity' => 50,
             'status' => 'active',
             'is_featured' => true,
         ]);
 
-        Product::create([
-            'vendor_id' => $vendor->id,
+        $product2 = Product::create([
             'category_id' => $electronics->id,
             'brand_id' => $brand->id,
             'name' => 'AirPods Pro 2',
             'slug' => 'airpods-pro-2',
             'description' => 'Magic on another level.',
-            'price' => 249.99,
-            'sale_price' => 199.99,
+            'price' => 200.00, // Wholesale price
+            'sale_price' => 180.00,
             'sku' => 'APRO2-WHT',
             'quantity' => 100,
             'status' => 'active',
             'is_featured' => true,
+        ]);
+
+        // Vendor imports products to their store
+        \App\Models\VendorProduct::create([
+            'vendor_id' => $vendor->id,
+            'product_id' => $product1->id,
+            'vendor_price' => 1099.99, // Retail price
+            'status' => 'active',
+        ]);
+
+        \App\Models\VendorProduct::create([
+            'vendor_id' => $vendor->id,
+            'product_id' => $product2->id,
+            'vendor_price' => 249.99, // Retail price
+            'status' => 'active',
         ]);
     }
 }

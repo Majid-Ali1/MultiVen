@@ -23,7 +23,7 @@ class DashboardController extends Controller
         ];
 
         $recent_orders = Order::with('user')->latest()->take(5)->get();
-        $recent_products = Product::with(['vendor', 'category'])->latest()->take(5)->get();
+        $recent_products = Product::with(['category'])->latest()->take(5)->get();
 
         return view('admin.dashboard', compact('stats', 'recent_orders', 'recent_products'));
     }

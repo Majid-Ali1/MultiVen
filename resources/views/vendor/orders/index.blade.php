@@ -5,10 +5,10 @@
 @section('vendor_content')
 <div class="space-y-6">
     <div class="flex justify-between items-center">
-        <h2 class="text-2xl font-black text-gray-900">Orders for My Products</h2>
+        <h2 class="text-2xl font-black text-gray-900">My Dropship Orders</h2>
         <div class="bg-white border border-gray-100 rounded-2xl px-4 py-2 shadow-sm">
-            <span class="text-sm text-gray-500">Total Revenue: </span>
-            <span class="text-sm font-black text-emerald-600">${{ number_format($totalRevenue, 2) }}</span>
+            <span class="text-sm text-gray-500">Total Wholesale Cost: </span>
+            <span class="text-sm font-black text-indigo-600">${{ number_format($totalRevenue, 2) }}</span>
         </div>
     </div>
 
@@ -36,8 +36,13 @@
                             <td class="py-4 px-6 font-bold text-gray-900">#{{ $order->order_number }}</td>
                             <td class="py-4 px-6">
                                 <div>
-                                    <p class="font-semibold text-gray-900">{{ $order->user->name }}</p>
-                                    <p class="text-xs text-gray-400">{{ $order->user->email }}</p>
+                                    @if($order->user)
+                                        <p class="font-semibold text-gray-900">{{ $order->user->name }}</p>
+                                        <p class="text-xs text-gray-400">{{ $order->user->email }}</p>
+                                    @else
+                                        <p class="font-semibold text-gray-900">Dropship Customer</p>
+                                        <p class="text-xs text-gray-400">API Order</p>
+                                    @endif
                                 </div>
                             </td>
                             <td class="py-4 px-6 font-black text-gray-900">${{ number_format($order->total_amount, 2) }}</td>

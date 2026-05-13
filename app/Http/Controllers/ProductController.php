@@ -29,7 +29,7 @@ class ProductController extends Controller
 
     public function show($slug)
     {
-        $product = Product::with(['vendor', 'category', 'brand', 'variants.attributeValues.attribute'])
+        $product = Product::with(['category', 'brand', 'variants.attributeValues.attribute'])
             ->where('slug', $slug)
             ->where('status', 'active')
             ->firstOrFail();

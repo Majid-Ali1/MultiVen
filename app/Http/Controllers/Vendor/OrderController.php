@@ -12,18 +12,14 @@ class OrderController extends Controller
 {
     public function index()
     {
-        // Get orders that contain this vendor's products
         $vendorId = Auth::id();
-        $orderIds = OrderItem::whereHas('product', fn($q) => $q->where('vendor_id', $vendorId))
-            ->pluck('order_id')
-            ->unique();
 
         $orders = Order::with('user')
-            ->whereIn('id', $orderIds)
+            ->where('vendor_id', $vendorId)
             ->latest()
             ->paginate(20);
 
-        $totalRevenue = Order::whereIn('id', $orderIds)
+        $totalRevenue = Order::where('vendor_id', $vendorId)
             ->where('payment_status', 'paid')
             ->sum('total_amount');
 
@@ -32,10 +28,12 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $vendorId = Auth::id();
+        if ($order->vendor_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $items = OrderItem::with('product')
             ->where('order_id', $order->id)
-            ->whereHas('product', fn($q) => $q->where('vendor_id', $vendorId))
             ->get();
 
         return view('vendor.orders.show', compact('order', 'items'));

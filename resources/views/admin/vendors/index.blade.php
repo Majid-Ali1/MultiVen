@@ -53,7 +53,7 @@
                                 </span>
                             </td>
                             <td class="py-4 px-6 font-bold text-gray-900">
-                                {{ \App\Models\Product::where('vendor_id', $vendor->id)->count() }}
+                                {{ \App\Models\VendorProduct::where('vendor_id', $vendor->id)->count() }}
                             </td>
                             <td class="py-4 px-6 text-gray-500 text-xs">{{ $vendor->created_at->format('M d, Y') }}</td>
                             <td class="py-4 px-6 text-right">

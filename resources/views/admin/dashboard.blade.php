@@ -88,7 +88,7 @@
                             </div>
                             <div>
                                 <h4 class="text-sm font-black text-gray-900">{{ $product->name }}</h4>
-                                <p class="text-xs text-gray-500">by {{ $product->vendor->name }} • {{ $product->category->name }}</p>
+                                <p class="text-xs text-gray-500">Catalog Item • {{ $product->category->name }}</p>
                             </div>
                         </div>
                         <div class="flex gap-2">
