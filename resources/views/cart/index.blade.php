@@ -16,7 +16,8 @@
                             @foreach($cart as $id => $details)
                                 <li class="p-8 flex items-center gap-6">
                                     <div class="h-24 w-24 rounded-2xl bg-gray-100 flex-shrink-0 overflow-hidden border border-gray-100">
-                                        <img src="{{ $details['image'] }}" class="w-full h-full object-cover">
+                                        @php $imgSrc = str_replace('via.placeholder.com/150', 'placehold.co/150x150', $details['image']); @endphp
+                                        <img src="{{ str_starts_with($imgSrc, 'http') ? $imgSrc : asset('storage/' . $imgSrc) }}" class="w-full h-full object-cover">
                                     </div>
                                     <div class="flex-grow">
                                         <h3 class="text-lg font-bold text-gray-900">{{ $details['name'] }}</h3>
@@ -72,7 +73,7 @@
                         </div>
                     </div>
                     <div class="mt-8">
-                        <x-ui.button onclick="window.location='{{ route('checkout.index') }}'" class="w-full py-4 text-lg font-black shadow-lg shadow-indigo-100" {{ count($cart) == 0 ? 'disabled' : '' }}>
+                        <x-ui.button onclick="window.location='{{ route('checkout.index') }}'" class="w-full py-4 text-lg font-black shadow-lg shadow-indigo-100" :disabled="count($cart) == 0">
                             Checkout Now
                         </x-ui.button>
                         <p class="text-center text-xs text-gray-400 mt-4">

@@ -75,7 +75,7 @@
                                 <p class="mt-1 text-[10px] text-gray-500">Min: ${{ number_format($product->price, 2) }}</p>
                             </div>
                             
-                            <x-ui.button type="submit" variant="primary" class="w-full justify-center" @disabled($product->quantity <= 0)>
+                            <x-ui.button type="submit" variant="primary" class="w-full justify-center" :disabled="$product->quantity <= 0">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                                 Import to Store
                             </x-ui.button>

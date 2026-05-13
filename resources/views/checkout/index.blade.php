@@ -55,7 +55,8 @@
                                 <li class="py-4 flex justify-between items-center">
                                     <div class="flex items-center gap-3">
                                         <div class="h-12 w-12 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden">
-                                            <img src="{{ $details['image'] }}" class="w-full h-full object-cover">
+                                            @php $imgSrc = str_replace('via.placeholder.com/150', 'placehold.co/150x150', $details['image']); @endphp
+                                            <img src="{{ str_starts_with($imgSrc, 'http') ? $imgSrc : asset('storage/' . $imgSrc) }}" class="w-full h-full object-cover">
                                         </div>
                                         <div>
                                             <p class="text-sm font-bold text-gray-900 line-clamp-1">{{ $details['name'] }}</p>

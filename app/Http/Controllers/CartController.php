@@ -30,7 +30,7 @@ class CartController extends Controller
                 "name" => $product->name,
                 "quantity" => 1,
                 "price" => $product->sale_price ?? $product->price,
-                "image" => $product->image ?? 'https://via.placeholder.com/150'
+                "image" => $product->image ?? 'https://placehold.co/150x150'
             ];
         }
 
